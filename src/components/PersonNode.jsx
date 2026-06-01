@@ -53,7 +53,7 @@ export function PersonNode({ data, selected }) {
         >
           {data.generationLabel}
         </div>
-        <p className="line-clamp-2 font-serif text-[17px] font-semibold leading-5 text-stone-900">
+        <p className="line-clamp-2 font-serif text-[19px] font-bold leading-snug text-stone-900">
           {data.fullName}
         </p>
         {data.nickname ? (
