@@ -9,6 +9,7 @@ export function MemberDetails({
   onUpdate,
   deleting,
   updating,
+  canEdit = false,
 }) {
   const [isEditing, setIsEditing] = useState(false)
 
@@ -81,26 +82,28 @@ export function MemberDetails({
       </div>
 
       <div className="space-y-4 p-5 text-sm text-stone-700">
-        <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => setIsEditing(true)}
-            disabled={updating || deleting}
-            className="inline-flex items-center gap-2 rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <Pencil size={16} />
-            Edit anggota
-          </button>
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={deleting || updating}
-            className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <Trash2 size={16} />
-            {deleting ? 'Menghapus...' : 'Hapus anggota'}
-          </button>
-        </div>
+        {canEdit && (
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              disabled={updating || deleting}
+              className="inline-flex items-center gap-2 rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Pencil size={16} />
+              Edit anggota
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting || updating}
+              className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Trash2 size={16} />
+              {deleting ? 'Menghapus...' : 'Hapus anggota'}
+            </button>
+          </div>
+        )}
 
         <div className="grid gap-3 md:grid-cols-2">
           <InfoRow icon={Cake} label="Tahun lahir" value={member.birthYear || '-'} />

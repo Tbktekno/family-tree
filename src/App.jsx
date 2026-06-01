@@ -8,6 +8,10 @@ import { useFamilyTree } from './hooks/useFamilyTree'
 const normalizeFamilyName = (value) => value?.trim().toLowerCase() || ''
 
 function App() {
+  const path = typeof window !== 'undefined' ? window.location.pathname : '/'
+  const canAdd = path === '/tambah-anggota'
+  const canEdit = path === '/edit-anggota'
+
   const {
     members,
     selectedId,
@@ -118,15 +122,17 @@ function App() {
                     ))}
                   </select>
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setIsDeleteModalOpen(true)}
-                  disabled={loading}
-                  className="flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
-                  title="Hapus keluarga ini"
-                >
-                  <Trash2 size={20} />
-                </button>
+                {canEdit && (
+                  <button
+                    type="button"
+                    onClick={() => setIsDeleteModalOpen(true)}
+                    disabled={loading}
+                    className="flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    title="Hapus keluarga ini"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                )}
                 <div className="flex flex-1 items-center gap-2">
                   <input
                     value={newFamilyName}
@@ -185,19 +191,23 @@ function App() {
               onUpdate={updateMember}
               deleting={loading}
               updating={loading}
+              canEdit={canEdit}
             />
             
           </aside>
         </section>
-        <div className="w-full mt-4">
-          <MemberForm
-              members={members}
-              onSubmit={handleSubmitMember}
-              loading={loading}
-              disabled={!hasFirebaseConfig}
-              selectedFamilyName={selectedFamilyName}
-          />
-        </div>
+        
+        {canAdd && (
+          <div className="w-full mt-4">
+            <MemberForm
+                members={members}
+                onSubmit={handleSubmitMember}
+                loading={loading}
+                disabled={!hasFirebaseConfig}
+                selectedFamilyName={selectedFamilyName}
+            />
+          </div>
+        )}
         
       </main>
 

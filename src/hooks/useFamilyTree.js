@@ -170,12 +170,23 @@ export function useFamilyTree() {
     const removedSpouseIds = prevSpouseIds.filter((id) => !nextSpouseIds.includes(id))
     const addedSpouseIds = nextSpouseIds.filter((id) => !prevSpouseIds.includes(id))
 
+    const prevChildIds = members
+      .filter((m) => m.parentIds?.includes(memberId))
+      .map((m) => m.id)
+    const nextChildIds = uniqueIds(form.childIds)
+    const removedChildIds = prevChildIds.filter((id) => !nextChildIds.includes(id))
+    const addedChildIds = nextChildIds.filter((id) => !prevChildIds.includes(id))
+
     try {
       await updateDoc(doc(db, 'familyMembers', memberId), {
         familyName: (form.familyName || currentMember.familyName || DEFAULT_FAMILY_NAME).trim(),
         fullName: form.fullName.trim(),
         nickname: form.nickname.trim(),
         gender: form.gender,
+        birthYear: form.birthYear || '',
+        birthplace: form.birthplace || '',
+        bio: form.bio || '',
+        photoUrl: form.photoUrl || '',
         parentIds: uniqueIds(form.parentIds).slice(0, 2),
         spouseIds: nextSpouseIds,
       })
@@ -202,6 +213,26 @@ export function useFamilyTree() {
 
           await updateDoc(doc(db, 'familyMembers', spouseId), {
             spouseIds: uniqueIds([...(spouse.spouseIds || []), memberId]),
+          })
+        }),
+      )
+
+      await Promise.all(
+        removedChildIds.map(async (childId) => {
+          const child = members.find((member) => member.id === childId)
+          if (!child) return
+          await updateDoc(doc(db, 'familyMembers', childId), {
+            parentIds: uniqueIds((child.parentIds || []).filter((id) => id !== memberId)),
+          })
+        }),
+      )
+
+      await Promise.all(
+        addedChildIds.map(async (childId) => {
+          const child = members.find((member) => member.id === childId)
+          if (!child) return
+          await updateDoc(doc(db, 'familyMembers', childId), {
+            parentIds: uniqueIds([...(child.parentIds || []), memberId]).slice(0, 2),
           })
         }),
       )

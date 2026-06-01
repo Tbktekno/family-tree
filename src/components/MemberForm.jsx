@@ -8,19 +8,27 @@ const initialForm = {
   fullName: '',
   nickname: '',
   gender: 'Perempuan',
+  birthYear: '',
+  birthplace: '',
+  bio: '',
+  photoUrl: '',
   parentIds: [],
   spouseIds: [],
   childIds: [],
 }
 
-const createFormState = (member, selectedFamilyName = 'Gamai') => ({
+const createFormState = (member, selectedFamilyName = 'Gamai', members = []) => ({
   familyName: member?.familyName || selectedFamilyName || 'Gamai',
   fullName: member?.fullName || '',
   nickname: member?.nickname || '',
   gender: member?.gender || 'Perempuan',
+  birthYear: member?.birthYear || '',
+  birthplace: member?.birthplace || '',
+  bio: member?.bio || '',
+  photoUrl: member?.photoUrl || '',
   parentIds: [...(member?.parentIds || [])],
   spouseIds: [...(member?.spouseIds || [])],
-  childIds: [...(member?.childIds || [])],
+  childIds: member ? members.filter(m => m.parentIds?.includes(member.id)).map(m => m.id) : [],
 })
 
 const inputClassName =
@@ -36,7 +44,7 @@ export function MemberForm({
   mode = 'create',
   onCancel,
 }) {
-  const [form, setForm] = useState(() => createFormState(initialData, selectedFamilyName))
+  const [form, setForm] = useState(() => createFormState(initialData, selectedFamilyName, members))
   const isEditMode = mode === 'edit'
 
   const activeFamilyName = (form.familyName || selectedFamilyName || 'Gamai').trim()
@@ -48,7 +56,7 @@ export function MemberForm({
 
   useEffect(() => {
     if (isEditMode) {
-      setForm(createFormState(initialData, selectedFamilyName))
+      setForm(createFormState(initialData, selectedFamilyName, members))
       return
     }
 
@@ -175,6 +183,47 @@ export function MemberForm({
                   <option>Laki-laki</option>
                   <option>Perempuan</option>
                 </select>
+              </Field>
+              <Field label="Tahun lahir">
+                <input
+                  name="birthYear"
+                  type="number"
+                  value={form.birthYear}
+                  onChange={handleChange}
+                  disabled={disabled}
+                  className={inputClassName}
+                  placeholder="Contoh: 1990"
+                />
+              </Field>
+              <Field label="Tempat asal">
+                <input
+                  name="birthplace"
+                  value={form.birthplace}
+                  onChange={handleChange}
+                  disabled={disabled}
+                  className={inputClassName}
+                  placeholder="Contoh: Jakarta"
+                />
+              </Field>
+              <Field label="URL Foto">
+                <input
+                  name="photoUrl"
+                  value={form.photoUrl}
+                  onChange={handleChange}
+                  disabled={disabled}
+                  className={inputClassName}
+                  placeholder="https://..."
+                />
+              </Field>
+              <Field label="Catatan / Bio">
+                <textarea
+                  name="bio"
+                  value={form.bio}
+                  onChange={handleChange}
+                  disabled={disabled}
+                  className={`${inputClassName} min-h-[100px] resize-y`}
+                  placeholder="Catatan singkat tentang anggota ini..."
+                />
               </Field>
             </div>
           </div>
