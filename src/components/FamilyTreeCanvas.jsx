@@ -2,9 +2,11 @@ import { useMemo } from 'react'
 import {
   Background,
   Controls,
+  ControlButton,
   ReactFlow,
 } from '@xyflow/react'
 import { motion } from 'framer-motion'
+import { RotateCcw } from 'lucide-react'
 import { ConnectorNode } from './ConnectorNode'
 import { PersonNode } from './PersonNode'
 import { buildGraph } from '../utils/graph'
@@ -14,10 +16,10 @@ const nodeTypes = {
   person: PersonNode,
 }
 
-export function FamilyTreeCanvas({ members, selectedId, onSelect }) {
+export function FamilyTreeCanvas({ members, selectedId, onSelect, onFocusDownward, isFocusMode, onResetFocus }) {
   const { nodes, edges } = useMemo(
-    () => buildGraph(members, selectedId),
-    [members, selectedId],
+    () => buildGraph(members, selectedId, onFocusDownward, onSelect),
+    [members, selectedId, onFocusDownward, onSelect],
   )
   const graphKey = useMemo(
     () => members.map((member) => member.id).sort().join(':') || 'empty-family',
@@ -58,7 +60,17 @@ export function FamilyTreeCanvas({ members, selectedId, onSelect }) {
         }}
       >
         <Background color="#ece3d7" gap={34} size={1} />
-        <Controls className="!rounded-2xl !border !border-stone-200/80 !bg-white/90 !shadow-lg" />
+        <Controls className="!rounded-2xl !border !border-stone-200/80 !bg-white/90 !shadow-lg">
+          {isFocusMode && (
+            <ControlButton 
+              onClick={onResetFocus} 
+              title="Reset Tampilan (Kembali ke Semula)"
+              className="!text-amber-600 hover:!bg-amber-50"
+            >
+              <RotateCcw size={16} />
+            </ControlButton>
+          )}
+        </Controls>
       </ReactFlow>
     </motion.div>
   )

@@ -283,7 +283,7 @@ const addEdge = (
   })
 }
 
-export function buildGraph(members, selectedId = null) {
+export function buildGraph(members, selectedId = null, onFocusDownward = null, onSelect = null) {
   const normalizedMembers = normalizeMembers(members)
   const byId = new Map(normalizedMembers.map((member) => [member.id, member]))
   const generationMap = buildGenerationMap(normalizedMembers, byId)
@@ -547,6 +547,8 @@ export function buildGraph(members, selectedId = null) {
         generationLabel: `Generasi ${generation + 1}`,
         generationColor:
           CONFIG.GENERATION_COLORS[generation % CONFIG.GENERATION_COLORS.length],
+        onFocusDownward,
+        onSelect,
       },
     }
   })

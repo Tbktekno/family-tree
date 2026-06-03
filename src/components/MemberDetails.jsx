@@ -60,6 +60,32 @@ export function MemberDetails({
     )
   }
 
+  const getLineageString = (startMember) => {
+    let current = startMember
+    const lineage = [current.fullName]
+    const visited = new Set([current.id])
+
+    while (current && current.parentIds?.length > 0) {
+      const parents = current.parentIds
+        .map((pid) => members.find((m) => m.id === pid))
+        .filter(Boolean)
+      
+      if (parents.length === 0) break
+
+      const nextParent = parents.find((p) => p.gender === 'Laki-laki') || parents[0]
+      if (visited.has(nextParent.id)) break
+      visited.add(nextParent.id)
+
+      const isFemale = current.gender?.toLowerCase() === 'perempuan'
+      const connector = isFemale ? 'binti' : 'bin'
+      
+      lineage.push(`${connector} ${nextParent.fullName}`)
+      current = nextParent
+    }
+
+    return lineage.join(' ')
+  }
+
   return (
     <div className="overflow-hidden rounded-[28px] border border-stone-200/70 bg-white/85 shadow-[0_20px_60px_rgba(41,37,36,0.12)]">
       <div className="relative h-44 overflow-hidden">
@@ -125,6 +151,16 @@ export function MemberDetails({
           label="Orang tua"
           value={findNames(member.parentIds).join(', ') || '-'}
         />
+
+        <div className="rounded-2xl bg-amber-50/50 p-4 border border-amber-100">
+          <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
+            <ScrollText size={14} className="text-amber-700" />
+            <span>Jalur Nasab / Silsilah</span>
+          </div>
+          <p className="text-sm leading-6 text-amber-900 font-serif italic">
+            {getLineageString(member)}
+          </p>
+        </div>
 
         <div className="rounded-2xl bg-stone-50 p-4 leading-6 text-stone-600">
           {member.bio || 'Belum ada catatan keluarga untuk anggota ini.'}

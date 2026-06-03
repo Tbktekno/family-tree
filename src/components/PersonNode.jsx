@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Handle, Position } from '@xyflow/react'
-
 export function PersonNode({ data, selected }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   return (
     <div className="relative w-[118px] text-center">
       <Handle
@@ -31,7 +33,11 @@ export function PersonNode({ data, selected }) {
       />
 
       <div
-        className={`mx-auto h-[86px] w-[86px] overflow-hidden rounded-full border-[3px] bg-stone-200 shadow-[0_12px_28px_rgba(41,37,36,0.12)] transition duration-300 ${
+        onClick={(e) => {
+          e.stopPropagation()
+          setIsMenuOpen(!isMenuOpen)
+        }}
+        className={`mx-auto h-[86px] w-[86px] cursor-pointer overflow-hidden rounded-full border-[3px] bg-stone-200 shadow-[0_12px_28px_rgba(41,37,36,0.12)] transition duration-300 ${
           selected ? 'scale-105 shadow-[0_18px_32px_rgba(120,53,15,0.18)]' : ''
         }`}
         style={{ borderColor: data.generationColor }}
@@ -45,6 +51,32 @@ export function PersonNode({ data, selected }) {
           className="h-full w-full object-cover"
         />
       </div>
+
+      {isMenuOpen && (
+        <div 
+          className="absolute left-[105px] top-4 z-50 w-48 rounded-xl border border-stone-200 bg-white p-2 shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={() => {
+              if (data.onSelect) data.onSelect(data.id)
+              setIsMenuOpen(false)
+            }}
+            className="mb-1 w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-stone-700 transition hover:bg-stone-100 hover:text-stone-900"
+          >
+            Lihat Detail
+          </button>
+          <button
+            onClick={() => {
+              if (data.onFocusDownward) data.onFocusDownward(data.id)
+              setIsMenuOpen(false)
+            }}
+            className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-stone-700 transition hover:bg-stone-100 hover:text-stone-900"
+          >
+            Fokus ke Keturunan
+          </button>
+        </div>
+      )}
 
       <div className="mt-2 space-y-1">
         <div

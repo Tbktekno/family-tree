@@ -30,6 +30,7 @@ function App() {
   const [customFamilyNames, setCustomFamilyNames] = useState([])
   const [newFamilyName, setNewFamilyName] = useState('')
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [focusedAncestorId, setFocusedAncestorId] = useState(null)
 
   const familyNames = useMemo(() => {
     const names = Array.from(new Set([
@@ -59,6 +60,32 @@ function App() {
   const selectedMemberInFamily =
     filteredMembers.find((member) => member.id === selectedId) ?? null
 
+  const displayedMembers = useMemo(() => {
+    if (!focusedAncestorId) return filteredMembers
+
+    const descendantSet = new Set([focusedAncestorId])
+    let added = true
+    while (added) {
+      added = false
+      for (const member of filteredMembers) {
+        if (descendantSet.has(member.id)) continue
+        const isChild = member.parentIds?.some(pid => descendantSet.has(pid))
+        if (isChild) {
+          descendantSet.add(member.id)
+          added = true
+        }
+      }
+    }
+
+    // Include spouses of descendants
+    for (const member of filteredMembers) {
+      if (descendantSet.has(member.id)) {
+        member.spouseIds?.forEach(sid => descendantSet.add(sid))
+      }
+    }
+
+    return filteredMembers.filter(m => descendantSet.has(m.id))
+  }, [filteredMembers, focusedAncestorId])
 
 
   const handleSubmitMember = async (form) => {
@@ -156,11 +183,13 @@ function App() {
                 </div>
               </div>
             </div>
-
             <FamilyTreeCanvas
-              members={filteredMembers}
+              members={displayedMembers}
               selectedId={selectedId}
               onSelect={setSelectedId}
+              onFocusDownward={setFocusedAncestorId}
+              isFocusMode={!!focusedAncestorId}
+              onResetFocus={() => setFocusedAncestorId(null)}
             />
           </div>
 
