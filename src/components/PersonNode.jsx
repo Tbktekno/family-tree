@@ -2,7 +2,7 @@ import { Handle, Position } from '@xyflow/react'
 
 export function PersonNode({ data, selected }) {
   return (
-    <div className="relative w-[118px] text-center">
+    <div className="relative w-[140px] text-center">
       <Handle
         id="ancestor-target"
         type="target"
@@ -53,7 +53,7 @@ export function PersonNode({ data, selected }) {
         >
           {data.generationLabel}
         </div>
-        <p className="line-clamp-2 font-serif text-[19px] font-bold leading-snug text-stone-900">
+        <p className="line-clamp-2 font-serif text-2xl font-extrabold leading-snug text-stone-900">
           {data.fullName}
         </p>
         {data.nickname ? (
